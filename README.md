@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Five Minutes Daily Report
 
-## Getting Started
+ 今日の努力を5分で共有、ミニマルな日報アプリ。
 
-First, run the development server:
+## デプロイ先
+https://five-minutes-daily-report-nodl.vercel.app/reports
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+##  機能
+- 日報の作成
+- 日報の一覧表示
+- 日報の詳細表示
+- Supabase 認証
+- 画像アップロード
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+##  技術スタック
+- Next.js 15
+- Supabase
+- Tailwind CSS
+- Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+##  開発の目的
+このアプリは、日々の進捗が見えにくいという課題を解消するために制作したものです。
+できるだけ手間をかけずに情報共有ができるよう、入力の負担を最小限に抑える設計を目指しました。
+また、新しいツールが業務フローに馴染まず、「最初だけ使われて、すぐ使われなくなる」というよくある問題にも対応しています。
+更新頻度の低下を防ぐために、SNS のようなポップで親しみやすい UI を取り入れ、日報を書く行為そのものが続けやすくなる工夫を盛り込んでいます。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 今後の拡張案
+・ AI が自動で日報を書く
+　（画像＋作業内容から文章生成）
+・ 効果音で操作の楽しさを演出
+　（使用感の向上）
+・ リアクションボタン
+　（既読としての機能や手軽なリアクションが可能）
+・ 感情診断アンケート機能
+　(コンディションの可視化)
