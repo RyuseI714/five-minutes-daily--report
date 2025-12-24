@@ -11,6 +11,7 @@ https://five-minutes-daily-report-nodl.vercel.app/reports
 - 日報の詳細表示
 - Supabase 認証
 - 画像アップロード
+- 進捗ステータス表示
 
 ##  技術スタック
 - Next.js 15
