@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable */
+
 import DeleteButton from "../DeleteButton"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
