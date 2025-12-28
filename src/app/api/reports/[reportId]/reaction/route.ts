@@ -4,9 +4,9 @@ import { createServerClient } from "@supabase/ssr"
 
 export async function POST(
   req: NextRequest,
-  context: { params: { reportId: string } }
+  context: { params: Record<string, string> }
 ) {
-  const { reportId } = context.params
+  const reportId = Number(context.params.reportId)
 
   const cookieStore = await cookies()
 
@@ -31,14 +31,12 @@ export async function POST(
     return NextResponse.json({ error: "Not logged in" }, { status: 401 })
   }
 
-  const numericId = Number(reportId)
-
   const displayName = user.user_metadata?.full_name ?? "名無し"
 
   const { data: existing } = await supabase
     .from("report_reactions")
     .select("*")
-    .eq("report_id", numericId)
+    .eq("report_id", reportId)
     .eq("user_id", user.id)
     .maybeSingle()
 
@@ -55,7 +53,7 @@ export async function POST(
     .from("report_reactions")
     .insert([
       {
-        report_id: numericId,
+        report_id: reportId,
         user_id: user.id,
         user_name: displayName,
       },
