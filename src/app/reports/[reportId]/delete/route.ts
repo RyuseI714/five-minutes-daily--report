@@ -8,7 +8,6 @@ export async function POST(
   req: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  // ★ Next.js 15 では params は Promise
   const { id } = await context.params
 
   const numericId = Number(id)
@@ -19,7 +18,7 @@ export async function POST(
   const supabase = await createClient()
 
   const { error } = await supabase
-    .from("reports")
+    .from("comments")
     .delete()
     .eq("id", numericId)
 

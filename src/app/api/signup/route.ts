@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     }
   )
 
-  const { email, password } = await req.json()
+  const { name, email, password } = await req.json()
 
   if (!email || !password) {
     return NextResponse.json(
@@ -32,16 +32,20 @@ export async function POST(req: Request) {
     )
   }
 
-  // ★ ログイン処理
-  const { error } = await supabase.auth.signInWithPassword({
+  // ★ Display name を full_name として保存
+  const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        full_name: name,   // ← ここが超重要
+      },
+    },
   })
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
-  // ★ 成功
   return NextResponse.json({ success: true })
 }

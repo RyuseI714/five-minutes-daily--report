@@ -6,15 +6,26 @@ export async function POST(req: Request) {
     const body = await req.json()
     console.log("CREATE API HIT", body)
 
-    const { author, title, content, status, progress, image_url } = body
+    const { title, content, status, progress, image_url } = body
 
+    // ★ ログイン中のユーザーを取得
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+    }
+
+    // ★ author は body から受け取らず、user.id を使う
     const { error } = await supabase.from("reports").insert({
-      author,
+      author: user.id,
       title,
       content,
       status,
       progress,
-      image_url,   // ✅ これが無いと絶対に保存されない
+      image_url,
     })
 
     if (error) {

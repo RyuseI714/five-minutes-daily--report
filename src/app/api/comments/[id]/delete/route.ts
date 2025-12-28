@@ -1,14 +1,14 @@
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
 export async function POST(
   req: Request,
-  ctx: { params: Promise<{ id: string }> } // ✅ Promise として受け取る
+  ctx: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await ctx.params              // ✅ await が必須
+  const { id } = await ctx.params
   console.log("🔥 API params:", id)
 
   const numericId = Number(id)
@@ -19,6 +19,9 @@ export async function POST(
       { status: 400 }
     )
   }
+
+  // ★ ここが最重要：サーバー用 Supabase クライアント
+  const supabase = await createClient()
 
   const { error } = await supabase
     .from("comments")

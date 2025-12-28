@@ -9,16 +9,25 @@ export default function LoginPage() {
   const login = async () => {
     const res = await fetch("/api/login", {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     })
 
-    if (!res.ok) {
-      const { error } = await res.json()
-      alert("ログイン失敗: " + error)
+    // 成功したらトップへ
+    if (res.ok) {
+      window.location.href = "/reports"
       return
     }
 
-    window.location.href = "/"
+    // リダイレクト対応（必要なら）
+    if (res.redirected) {
+      window.location.href = res.url
+      return
+    }
+
+    // エラー時だけ JSON を読む
+    const { error } = await res.json()
+    alert("ログイン失敗: " + error)
   }
 
   return (

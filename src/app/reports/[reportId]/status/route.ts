@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
+import { redirect } from "next/navigation"
 
 export async function POST(req: Request) {
   const cookieStore = await cookies()
@@ -14,34 +15,32 @@ export async function POST(req: Request) {
           return cookieStore.get(name)?.value
         },
         set(name: string, value: string, options: any) {
-          cookieStore.set(name, value, options)
+          cookieStore.set({ name, value, ...options })
         },
         remove(name: string, options: any) {
-          cookieStore.set(name, "", { ...options, maxAge: 0 })
+          cookieStore.set({ name, value: "", ...options })
         },
       },
     }
   )
 
-  const { email, password } = await req.json()
+  const url = new URL(req.url)
+  const segments = url.pathname.split("/")
+  const id = Number(segments[2])
 
-  if (!email || !password) {
-    return NextResponse.json(
-      { error: "メールとパスワードは必須です" },
-      { status: 400 }
-    )
+  const formData = await req.formData()
+  const status = formData.get("status")
+
+  if (typeof status !== "string") {
+    return redirect(`/reports/${id}`)
   }
 
-  // ★ ログイン処理
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+  const { error } = await supabase
+    .from("reports")
+    .update({ status })
+    .eq("id", id)
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
-  }
+  console.log("UPDATE ERROR:", error)
 
-  // ★ 成功
-  return NextResponse.json({ success: true })
+  return redirect(`/reports/${id}`)
 }
