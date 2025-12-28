@@ -10,14 +10,9 @@ type ReactionUser = {
   user_name: string
 }
 
-export default async function ReportDetailPage({
-  params,
-}: {
-  params: { reportId: string }
-}) {
-  const { reportId } = await params
+export default async function ReportDetailPage({ params }: any) {
+  const reportId = params.reportId
   const supabase = await createClient()
-
 
   // ★ レポート本体
   const { data: report, error } = await supabase
@@ -34,28 +29,28 @@ export default async function ReportDetailPage({
     .order("created_at", { ascending: true })
 
   // ★ ログインユーザー
-const {
-  data: { user },
-} = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-console.log("page user =", user)
+  console.log("page user =", user)
 
-// ★ 本文への自分のリアクション
-const { data: reportReactionRaw } = await supabase
-  .from("report_reactions")
-  .select("id")
-  .eq("report_id", reportId)
-  .eq("user_id", user?.id ?? "")
-  .maybeSingle()
+  // ★ 本文への自分のリアクション
+  const { data: reportReactionRaw } = await supabase
+    .from("report_reactions")
+    .select("id")
+    .eq("report_id", reportId)
+    .eq("user_id", user?.id ?? "")
+    .maybeSingle()
 
-const reportReaction = !!reportReactionRaw
+  const reportReaction = !!reportReactionRaw
 
-// ★ 本文リアクションを押したユーザー一覧（JOIN）
-// ReactionUser 型を使って型を固定
-const { data: reactionUsers } = await supabase
-  .from("report_reactions")
-  .select("id, user_id, user_name")
-  .eq("report_id", reportId)
+  // ★ 本文リアクションを押したユーザー一覧
+  const { data: reactionUsers } = await supabase
+    .from("report_reactions")
+    .select("id, user_id, user_name")
+    .eq("report_id", reportId)
+
   // ★ コメントへの自分のリアクション一覧
   const { data: commentReactions } = await supabase
     .from("comment_reactions")
@@ -95,16 +90,17 @@ const { data: reactionUsers } = await supabase
       )}
 
       {/* 本文 */}
-<div className="bg-white p-6 rounded-xl border border-[#DDEEE0]">
-  <p className="text-[#171717] whitespace-pre-line leading-relaxed">
-    {report.content}
-  </p>
+      <div className="bg-white p-6 rounded-xl border border-[#DDEEE0]">
+        <p className="text-[#171717] whitespace-pre-line leading-relaxed">
+          {report.content}
+        </p>
 
-  {/* ★ 本文リアクションボタン（fetch版） */}
-  <div className="mt-4 flex justify-end">
-    <ReactionButton reportId={report.id} reacted={reportReaction} />
-  </div>
-</div>
+        {/* ★ 本文リアクションボタン */}
+        <div className="mt-4 flex justify-end">
+          <ReactionButton reportId={report.id} reacted={reportReaction} />
+        </div>
+      </div>
+
       {/* ★ リアクションしたユーザー一覧 */}
       <div className="mt-4 bg-white p-4 rounded-xl border border-[#D9D2C3]/50 shadow-sm">
         <h3 className="text-sm font-semibold text-[#5A5448] mb-2">
@@ -113,9 +109,9 @@ const { data: reactionUsers } = await supabase
 
         {reactionUsers && reactionUsers.length > 0 ? (
           <ul className="text-sm text-[#171717] space-y-1">
-           {reactionUsers?.map((r) => (
-  <li key={r.id}>{r.user_name}</li>
-))}
+            {reactionUsers.map((r) => (
+              <li key={r.id}>{r.user_name}</li>
+            ))}
           </ul>
         ) : (
           <p className="text-xs text-gray-500">まだ誰もリアクションしていません。</p>
@@ -170,48 +166,41 @@ const { data: reactionUsers } = await supabase
         </div>
 
         {/* コメント一覧 */}
-<div className="space-y-4">
-  {comments && comments.length > 0 ? (
-    comments.map((comment) => (
-      <div key={comment.id} className="flex items-start gap-3">
-        
-        {/* アイコン：author_name の頭文字 */}
-        <div className="w-10 h-10 rounded-full bg-[#F7F5EF] flex items-center justify-center text-[#5A5448] font-semibold">
-          {comment.author_name?.charAt(0) ?? "?"}
-        </div>
+        <div className="space-y-4">
+          {comments && comments.length > 0 ? (
+            comments.map((comment) => (
+              <div key={comment.id} className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#F7F5EF] flex items-center justify-center text-[#5A5448] font-semibold">
+                  {comment.author_name?.charAt(0) ?? "?"}
+                </div>
 
-        <div className="bg-white p-4 rounded-xl border border-[#D9D2C3]/50 shadow-sm max-w-[80%]">
-          
-          {/* 名前 */}
-          <div className="text-sm font-semibold text-[#5A5448] mb-1">
-            {comment.author_name ?? "不明"}
-          </div>
+                <div className="bg-white p-4 rounded-xl border border-[#D9D2C3]/50 shadow-sm max-w-[80%]">
+                  <div className="text-sm font-semibold text-[#5A5448] mb-1">
+                    {comment.author_name ?? "不明"}
+                  </div>
 
-          {/* コメント本文 */}
-          <p className="text-[#171717] whitespace-pre-line leading-relaxed">
-            {comment.content}
-          </p>
+                  <p className="text-[#171717] whitespace-pre-line leading-relaxed">
+                    {comment.content}
+                  </p>
 
-          {/* 投稿日時 */}
-          <div className="text-xs text-[#6B7280] mt-2 flex justify-between">
-            <span>{new Date(comment.created_at).toLocaleString()}</span>
-          </div>
+                  <div className="text-xs text-[#6B7280] mt-2 flex justify-between">
+                    <span>{new Date(comment.created_at).toLocaleString()}</span>
+                  </div>
 
-          {/* 自分のコメントだけ削除ボタン */}
-          {comment.user_id === user?.id && (
-            <div className="mt-2 flex justify-end">
-              <DeleteButton id={comment.id} type="comment" />
+                  {comment.user_id === user?.id && (
+                    <div className="mt-2 flex justify-end">
+                      <DeleteButton id={comment.id} type="comment" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-[#6B7280] bg-white p-4 rounded-xl border border-[#D9D2C3]/50 shadow-sm">
+              コメントはまだありません。
             </div>
           )}
         </div>
-      </div>
-    ))
-  ) : (
-    <div className="text-sm text-[#6B7280] bg-white p-4 rounded-xl border border-[#D9D2C3]/50 shadow-sm">
-      コメントはまだありません。
-    </div>
-  )}
-</div>
 
         <CommentForm reportId={report.id} />
       </section>
