@@ -4,8 +4,10 @@ import { createServerClient } from "@supabase/ssr"
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { reportId: string } }
+  context: { params: { reportId: string } }
 ) {
+  const { reportId } = context.params
+
   const cookieStore = await cookies()
 
   const supabase = createServerClient(
@@ -20,7 +22,6 @@ export async function POST(
     }
   )
 
-  // セッション取得
   const {
     data: { session },
   } = await supabase.auth.getSession()
@@ -30,21 +31,18 @@ export async function POST(
     return NextResponse.json({ error: "Not logged in" }, { status: 401 })
   }
 
-  const reportId = Number(params.reportId)
+  const numericId = Number(reportId)
 
-  // ユーザー名（コメントと同じ仕様）
   const displayName = user.user_metadata?.full_name ?? "名無し"
 
-  // すでにリアクションしているか確認
   const { data: existing } = await supabase
     .from("report_reactions")
     .select("*")
-    .eq("report_id", reportId)
+    .eq("report_id", numericId)
     .eq("user_id", user.id)
     .maybeSingle()
 
   if (existing) {
-    // すでにリアクション済み → 削除（トグル）
     await supabase
       .from("report_reactions")
       .delete()
@@ -53,14 +51,13 @@ export async function POST(
     return NextResponse.json({ reacted: false })
   }
 
-  // 新規リアクション → user_name を保存
   const { data, error } = await supabase
     .from("report_reactions")
     .insert([
       {
-        report_id: reportId,
+        report_id: numericId,
         user_id: user.id,
-        user_name: displayName, // ← これが author_name と同じ役割
+        user_name: displayName,
       },
     ])
     .select()
