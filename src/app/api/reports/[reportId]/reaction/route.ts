@@ -1,11 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
 
-export async function POST(
-  req: NextRequest,
-  context: { params: Record<string, string> }
-) {
+export async function POST(request: Request, context: any) {
   const reportId = Number(context.params.reportId)
 
   const cookieStore = await cookies()
