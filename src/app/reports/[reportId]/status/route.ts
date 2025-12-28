@@ -4,7 +4,9 @@ import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
 import { redirect } from "next/navigation"
 
-export async function POST(req: Request) {
+export async function POST(req: Request, context: any) {
+  const id = Number(context.params.reportId)
+
   const cookieStore = await cookies()
 
   const supabase = createServerClient(
@@ -24,10 +26,6 @@ export async function POST(req: Request) {
       },
     }
   )
-
-  const url = new URL(req.url)
-  const segments = url.pathname.split("/")
-  const id = Number(segments[2])
 
   const formData = await req.formData()
   const status = formData.get("status")
