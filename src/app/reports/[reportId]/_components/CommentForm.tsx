@@ -13,9 +13,10 @@ export default function CommentForm({ reportId }: { reportId: number }) {
 
     const formData = new FormData()
     formData.append("content", content)
+    formData.append("report_id", String(reportId)) // ← 追加！
 
     // 🔥 正しい API パスに POST
-    const res = await fetch(`/api/reports/${reportId}/comments`, {
+    const res = await fetch(`/api/comments`, {
       method: "POST",
       body: formData,
     })
@@ -23,7 +24,6 @@ export default function CommentForm({ reportId }: { reportId: number }) {
     setLoading(false)
     setContent("")
 
-    // 🔥 POST 成功時のみリロード
     if (res.ok) {
       window.location.reload()
     } else {
